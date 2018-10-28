@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Book extends CI_Controller {
+class Home extends CI_Controller {
 
     /**
      * Index Page for Book controller.
@@ -20,6 +20,16 @@ class Book extends CI_Controller {
      */
     public function index()
     {
+        $this->load->model('book');
+        $book = new Book();
+        $book->bookTitle = "Thinking, fast and slow";
+        $book->bookCategory = 1;
+        $book->bookVisitorStats = 100;
+        $book->bookAuthor = "Daniel Kahneman";
+
+        $book->save();
+        echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
+
         $this->load->view('book');
     }
 }

@@ -1,29 +1,33 @@
 <?php
 
-class Book extends CI_Model {
+class Book extends MyModel {
+
+    const DB_TABLE = 'book';
+    const DB_TABLE_PK = 'id';
+
     /**
      * Book number unique id
      * @var int
      */
-    public $bookId;
+    public $id;
     /**
      * Book title
      * @var string
      */
-    public $bookTitle;
+    public $title;
     /**
      * Book category
-     * @var string
+     * @var int
      */
-    public $bookCategory;
+    public $category;
     /**
      * Number of people who viewed a particular book
      * @var int
      */
-    public $bookVisitorStats;
+    public $visitorStats;
     /**
      * Author or authors
      * @var string
      */
-    public $bookAuthor;
+    public $author;
 }
