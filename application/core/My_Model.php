@@ -1,6 +1,6 @@
 <?php
 
-class MyModel extends CI_Model{
+class My_Model extends CI_Model{
     const DB_TABLE = 'abstract';
     const DB_TABLE_PK = 'abstract';
 

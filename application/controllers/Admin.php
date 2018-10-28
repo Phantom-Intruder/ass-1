@@ -20,6 +20,17 @@ class Admin extends CI_Controller {
      */
     public function index()
     {
+        $this->load->model('book');
+        $book = new Book();
+        $book->title = "Thinking, fast and slow";
+        $book->cover = "somewhere";
+        $book->visitorStats = 100;
+        $book->categoryId = 1;
+        $book->authorId = 1;
+
+        $book->save();
+
+        echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
         $this->load->view('admin');
     }
 }

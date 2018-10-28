@@ -1,6 +1,6 @@
 <?php
 
-class Category extends MyModel {
+class Category extends My_Model {
     /**
      * Category number unique id
      * @var int

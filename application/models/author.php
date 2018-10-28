@@ -1,6 +1,6 @@
 <?php
 
-class Author extends MyModel {
+class Author extends My_Model {
     /**
      * Author unique id
      * @var int

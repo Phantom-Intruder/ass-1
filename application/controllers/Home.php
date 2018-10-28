@@ -20,16 +20,12 @@ class Home extends CI_Controller {
      */
     public function index()
     {
-        $this->load->model('book');
+        $data = array();
+        $this->load->model('Book');
         $book = new Book();
-        $book->bookTitle = "Thinking, fast and slow";
-        $book->bookCategory = 1;
-        $book->bookVisitorStats = 100;
-        $book->bookAuthor = "Daniel Kahneman";
+        $book->load(1);
+        $data['book'] = $book;
 
-        $book->save();
-        echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
-
-        $this->load->view('book');
+        $this->load->view('Book/list', $data);
     }
 }
