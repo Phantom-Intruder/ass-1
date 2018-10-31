@@ -39,7 +39,7 @@ class Book extends CI_Model {
      * Author or authors
      * @var int
      */
-    public $authorId;
+    public $author;
 
     /**
      * Create a record for book.
