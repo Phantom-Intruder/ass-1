@@ -20,19 +20,16 @@ class Admin extends CI_Controller {
      */
     public function index()
     {
+
         /**
-            $this->load->model('book');
-            $book = new Book();
-            $book->title = "Thinking, fast and slow";
-            $book->cover = "somewhere";
-            $book->visitorStats = 100;
-            $book->categoryId = 1;
-            $book->authorId = 1;
+            $this->load->model('category');
+            $book = new Category();
+            $book->name = "Science Fiction";
 
             $book->save();
 
             echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
-        **/
+        */
         $this->load->view('Admin/index');
     }
 
@@ -40,6 +37,7 @@ class Admin extends CI_Controller {
      * Add Book
      */
     public function add(){
+        $this->output->enable_profiler(TRUE);
         $this->load->helper('form');
         $this->load->model('Category');
         $categories = $this->Category->get();
@@ -47,6 +45,7 @@ class Admin extends CI_Controller {
         foreach ($categories as $id => $category){
             $category_options[$id] = $category->name;
         }
+
         $this->load->library('form_validation');
         $this->form_validation->set_rules(array(
             array(

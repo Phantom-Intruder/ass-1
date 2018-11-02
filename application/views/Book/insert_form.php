@@ -10,7 +10,7 @@
     </div>
     <div>
         <?php echo form_label('Book Category', 'categoryId'); ?>
-        <?php echo form_input('categoryId', $category_options, set_value('categoryId')); ?>
+        <?php echo form_dropdown('categoryId', $category_options, set_value('categoryId')); ?>
     </div>
     <div>
         <?php echo form_label('Author', 'author'); ?>
