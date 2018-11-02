@@ -20,23 +20,40 @@ class Admin extends CI_Controller {
      */
     public function index()
     {
-
         /**
             $this->load->model('category');
             $book = new Category();
-            $book->name = "Science Fiction";
+            $book->name = "Self help";
 
             $book->save();
 
             echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
-        */
-        $this->load->view('Admin/index');
+        **/
+        $this->load->view('Navigation/header');
+        $this->load->library('table');
+        $this->load->model('Book');
+        $books = $this->Book->get();
+        $books_list = array();
+        foreach ($books as $book){
+            $books_list[] = array(
+                $book->title,
+                $book->visitorStats,
+                $book->categoryId,
+                $book->author
+            );
+        }
+
+        $this->load->view('Admin/index', array(
+             'books' => $books_list
+        ));
+        $this->load->view('Navigation/footer');
     }
 
     /**
      * Add Book
      */
     public function add(){
+        $this->load->view('Navigation/header');
         $this->output->enable_profiler(TRUE);
         $this->load->helper('form');
         $this->load->model('Category');
@@ -82,11 +99,13 @@ class Admin extends CI_Controller {
             $book->title = $this->input->post('title');
             $book->cover = $this->input->post('cover');
             $book->author = $this->input->post('author');
+            $book->visitorStats = 0;
             print_r('', $book);
             $book->save();
             $this->load->view('Book/insert_success', array(
                 'book' => $book,
             ));
         }
+        $this->load->view('Navigation/footer');
     }
 }

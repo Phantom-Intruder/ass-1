@@ -96,7 +96,7 @@ class Book extends CI_Model {
      * @param int $offset
      * @return array of book models from db, key is PK.
      */
-    public function get($limit = 1, $offset = 0){
+    public function get($limit = 100, $offset = 0){
         if ($limit){
             $query = $this->db->get($this::DB_TABLE_NAME, $limit, $offset);
         }

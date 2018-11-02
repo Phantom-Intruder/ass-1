@@ -20,12 +20,17 @@ class Home extends CI_Controller {
      */
     public function index()
     {
-        $data = array();
+        $this->load->library('table');
         $this->load->model('Book');
-        $book = new Book();
-        $book->load(1);
-        $data['book'] = $book;
-
-        $this->load->view('Book/list', $data);
+        $books = $this->Book->get();
+        $books_list = array();
+        foreach ($books as $book){
+            $books_list[] = array(
+              $book->title,
+              $book->categoryId,
+              $book->author
+            );
+        }
+        $this->load->view('Book/list', $books_list);
     }
 }
