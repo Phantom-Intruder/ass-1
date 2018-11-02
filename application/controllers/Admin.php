@@ -82,6 +82,7 @@ class Admin extends CI_Controller {
             $book->title = $this->input->post('title');
             $book->cover = $this->input->post('cover');
             $book->author = $this->input->post('author');
+            print_r('', $book);
             $book->save();
             $this->load->view('Book/insert_success', array(
                 'book' => $book,
