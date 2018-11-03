@@ -31,6 +31,6 @@ class Home extends CI_Controller {
               $book->author
             );
         }
-        $this->load->view('Book/list', $books_list);
+        $this->load->view('Book/List', $books_list);
     }
 }

@@ -4,6 +4,7 @@ class Category extends My_Model {
 
     const DB_TABLE_NAME = 'category';
     const DB_TABLE_PK_VALUE = 'id';
+    const DB_TABLE_FIELD_NAME_VALUE = 'name';
 
     /**
      * Category number unique id
@@ -55,6 +56,17 @@ class Category extends My_Model {
     }
 
     /**
+     * Load category data from the database using category name
+     * @param string $name
+     */
+    public function loadByName($name){
+        $query = $this->db->get_where($this::DB_TABLE_NAME, array(
+            $this::DB_TABLE_FIELD_NAME_VALUE => $name,
+        ));
+        $this->populate($query->row());
+    }
+
+    /**
      * Populate data from an array
      * @param mixed $row
      */
@@ -86,5 +98,9 @@ class Category extends My_Model {
             $ret_value[$row->{$this::DB_TABLE_PK_VALUE}] = $model;
         }
         return $ret_value;
+    }
+
+    public function checkIfExists($categoryName){
+
     }
 }

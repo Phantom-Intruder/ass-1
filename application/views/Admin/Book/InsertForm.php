@@ -1,16 +1,17 @@
 <?php echo validation_errors(); ?>
-<?php echo form_open(); ?>
+<?php echo $this->upload->display_errors('<div class="alert alert-error">', '</div>'); ?>
+<?php echo form_open_multipart(); ?>
     <div>
         <?php echo form_label('Book Title', 'title'); ?>
         <?php echo form_input('title', set_value('title')); ?>
     </div>
     <div>
-        <?php echo form_label('Book Cover Image', 'cover'); ?>
-        <?php echo form_input('cover', set_value('cover')); ?>
+        <?php echo form_label('Book Category', 'categoryId'); ?>
+        <?php echo form_dropdown('categoryId', $category_options, set_value('categoryId'), 'class="browser-default"'); ?>
     </div>
     <div>
-        <?php echo form_label('Book Category', 'categoryId'); ?>
-        <?php echo form_dropdown('categoryId', $category_options, set_value('categoryId')); ?>
+        <?php echo form_label('Book Cover', 'cover'); ?>
+        <?php echo form_upload('cover'); ?>
     </div>
     <div>
         <?php echo form_label('Author', 'author'); ?>
