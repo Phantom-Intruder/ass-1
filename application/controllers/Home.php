@@ -20,17 +20,77 @@ class Home extends CI_Controller {
      */
     public function index()
     {
+        $this->load->view('Navigation/header');
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->get();
         $books_list = array();
         foreach ($books as $book){
+            $this->load->model('Category');
+            $category = new Category();
+            $category->load($book->categoryId);
             $books_list[] = array(
-              $book->title,
-              $book->categoryId,
-              $book->author
+                img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
+                anchor('Admin/showBook/' . $book->id, $book->title),
+                $category->name,
+                $book->author,
             );
         }
-        $this->load->view('Book/List', $books_list);
+
+        $this->load->view('Book/List', array(
+            'books' => $books_list
+        ));
+        $this->load->view('Navigation/footer');
+    }
+
+    /**
+     * View list of categories
+     */
+    public function listCategories()
+    {
+        $this->load->view('Navigation/header');
+        $this->load->library('table');
+        $this->load->model('Category');
+        $categories = $this->Category->get();
+        $categories_list = array();
+
+        foreach ($categories as $category) {
+            $categories_list[] = array(
+                anchor('Home/listByCategory/' . $category->id, $category->name),
+            );
+        }
+        $this->load->view('Category/List', array(
+            'categories' => $categories_list
+        ));
+        $this->load->view('Navigation/footer');
+    }
+
+    /**
+     * View books in a particular category
+     * @param int categoryId
+     */
+    public function listByCategory($categoryId){
+        $this->output->enable_profiler(TRUE);
+        $this->load->view('Navigation/header');
+        $this->load->library('table');
+        $this->load->model('Book');
+        $books = $this->Book->getByCategoryId($categoryId);
+        $books_list = array();
+        foreach ($books as $book){
+            $this->load->model('Category');
+            $category = new Category();
+            $category->load($book->categoryId);
+            $books_list[] = array(
+                img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
+                anchor('Admin/showBook/' . $book->id, $book->title),
+                $category->name,
+                $book->author,
+            );
+        }
+
+        $this->load->view('Book/List', array(
+            'books' => $books_list
+        ));
+        $this->load->view('Navigation/footer');
     }
 }

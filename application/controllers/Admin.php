@@ -35,13 +35,16 @@ class Admin extends CI_Controller {
         $books = $this->Book->get();
         $books_list = array();
         foreach ($books as $book){
+            $this->load->model('Category');
+            $category = new Category();
+            $category->load($book->categoryId);
             $books_list[] = array(
                 img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
-                anchor('Admin/Book/View/' . $book->id, $book->title),
+                anchor('Admin/showBook/' . $book->id, $book->title),
                 $book->visitorStats,
-                $book->categoryId,
+                $category->name,
                 $book->author,
-                anchor('Admin/Book/Delete/' . $book->id, 'Delete'),
+                anchor('Admin/deleteBook/' . $book->id, 'Delete'),
             );
         }
 
@@ -66,7 +69,6 @@ class Admin extends CI_Controller {
         $this->load->library('upload', $config);
 
         $this->load->view('Navigation/header');
-        $this->output->enable_profiler(TRUE);
         $this->load->helper('form');
         $this->load->model('Category');
         $categories = $this->Category->get();
@@ -130,7 +132,6 @@ class Admin extends CI_Controller {
     public function addCategory()
     {
         $this->load->view('Navigation/header');
-        $this->output->enable_profiler(TRUE);
         $this->load->helper('form');
 
         $this->load->library('form_validation');
@@ -159,8 +160,6 @@ class Admin extends CI_Controller {
      * @return boolean
      */
     public function checkIfExistingCategory($input){
-        echo "<h1>Came here</h1>";
-        print_r('', 'Came here');
         $data = array();
 
         $this->load->model('Category');
@@ -180,7 +179,9 @@ class Admin extends CI_Controller {
      * Show individual book details
      * @param int $id
      */
-    public function view($id){
+    public function showBook($id){
+        $this->output->enable_profiler(TRUE);
+
         $this->load->helper('html');
         $this->load->view('Navigation/header');
         $this->load->model('Book');
@@ -189,8 +190,40 @@ class Admin extends CI_Controller {
         if (!$book->id){
             show_404();
         }
-        $this->load->view('Admin/Book/View', $book);
+        $this->load->model('Category');
+        $category = new Category();
+        $category->load($book->categoryId);
+        $this->load->view('Admin/Book/View', array(
+            'book' => $book,
+            'category' => $category
+        ));
         $this->load->view('Navigation/Footer');
+    }
+
+    /**
+     * Search by author or book title
+     * @param string searchTerm
+     */
+    public function searchBook($searchTerm){
+        $this->load->view('Navigation/header');
+        $this->load->helper('form');
+        if (empty($searchTerm)){
+            //TODO: No parameters, just show empty box
+            $this->load->view('Admin/Search/index', array(
+                'search' => $searchTerm,
+            ));
+        }else{
+            //Has parameters, perform search
+            $this->load->model('Book');
+            $search = new Search();
+            $search->searchTerm = $this->input->post('searchTerm');
+            $category->save();
+
+            $this->load->view('Admin/Category/InsertSuccess', array(
+                'book' => $category,
+            ));
+        }
+        $this->load->view('Navigation/footer');
     }
 
 }

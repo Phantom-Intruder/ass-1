@@ -4,6 +4,7 @@ class Book extends CI_Model {
 
     const DB_TABLE_NAME = 'book';
     const DB_TABLE_PK_VALUE = 'id';
+    const DB_TABLE_CATEGORY_ID_VALUE = 'categoryId';
 
     /**
      * Book number unique id
@@ -103,6 +104,25 @@ class Book extends CI_Model {
         else{
             $query = $this->db->get($this::DB_TABLE_NAME);
         }
+        $ret_value = array();
+        $class = get_class($this);
+        foreach ($query->result() as $row){
+            $model = new $class;
+            $model->populate($row);
+            $ret_value[$row->{$this::DB_TABLE_PK_VALUE}] = $model;
+        }
+        return $ret_value;
+    }
+
+    /**
+     * Get all the books by category ID
+     * @param int categoryID
+     * @return array of book models from db, key is PK.
+     */
+    public function getByCategoryId($categoryId){
+        $query = $this->db->get_where($this::DB_TABLE_NAME, array(
+            $this::DB_TABLE_CATEGORY_ID_VALUE => $categoryId,
+        ));
         $ret_value = array();
         $class = get_class($this);
         foreach ($query->result() as $row){
