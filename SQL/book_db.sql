@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 28, 2018 at 03:02 PM
+-- Generation Time: Nov 04, 2018 at 04:22 PM
 -- Server version: 5.6.20
 -- PHP Version: 5.5.15
 
@@ -19,6 +19,16 @@ SET time_zone = "+00:00";
 --
 -- Database: `book_db`
 --
+
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetBySearchTerm`(IN `searchTerm` VARCHAR(500))
+    NO SQL
+select * from book where `title` like CONCAT('%',searchTerm,'%') or `author` like CONCAT('%',searchTerm,'%')$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -44,15 +54,19 @@ CREATE TABLE IF NOT EXISTS `book` (
   `cover` varchar(500) NOT NULL,
   `visitorStats` int(11) NOT NULL,
   `categoryId` int(11) NOT NULL,
-  `authorId` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+  `author` varchar(500) NOT NULL
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
 
 --
 -- Dumping data for table `book`
 --
 
-INSERT INTO `book` (`id`, `title`, `cover`, `visitorStats`, `categoryId`, `authorId`) VALUES
-(1, 'Thinking, fast and slow', 'somewhere', 100, 0, 0);
+INSERT INTO `book` (`id`, `title`, `cover`, `visitorStats`, `categoryId`, `author`) VALUES
+(1, 'Thinking, fast and slow', 'somewhere', 100, 1, 'Daniel Kahneman'),
+(5, 'Red Moon', 'https://images.gr-assets.com/books/1520263303l/38496710.jpg', 0, 6, 'Kim Stanley Robinson'),
+(7, 'Almost Everything: Notes on Hope', '392037901.jpg', 0, 1, ' Anne Lamott'),
+(8, 'Dare to Lead: Brave Work. Tough Conversations. Whole Hearts', '40109367.jpg', 0, 1, 'Brené Brown*'),
+(11, 'Elevation', '383554102.jpg', 0, 3, 'Stephen King');
 
 -- --------------------------------------------------------
 
@@ -74,8 +88,20 @@ CREATE TABLE IF NOT EXISTS `cart` (
 
 CREATE TABLE IF NOT EXISTS `category` (
 `id` int(11) NOT NULL,
-  `Name` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  `name` varchar(500) NOT NULL
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=22 ;
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`id`, `name`) VALUES
+(5, 'Business'),
+(3, 'Horror'),
+(21, 'Mystery'),
+(2, 'Psychology'),
+(6, 'Science Fiction'),
+(1, 'Self help');
 
 -- --------------------------------------------------------
 
@@ -109,7 +135,7 @@ ALTER TABLE `book`
 -- Indexes for table `category`
 --
 ALTER TABLE `category`
- ADD PRIMARY KEY (`id`);
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `orders`
@@ -130,12 +156,12 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `book`
 --
 ALTER TABLE `book`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=22;
 --
 -- AUTO_INCREMENT for table `orders`
 --
