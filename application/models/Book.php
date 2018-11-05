@@ -117,12 +117,14 @@ class Book extends CI_Model {
     /**
      * Get all the books by category ID
      * @param int categoryID
+     * @param int $limit
+     * @param int $offset
      * @return array of book models from db, key is PK.
      */
-    public function getByCategoryId($categoryId){
+    public function getByCategoryId($categoryId, $limit = 100, $offset = 0){
         $query = $this->db->get_where($this::DB_TABLE_NAME, array(
             $this::DB_TABLE_CATEGORY_ID_VALUE => $categoryId,
-        ));
+        ), $limit, $offset);
         $ret_value = array();
         $class = get_class($this);
         foreach ($query->result() as $row){
