@@ -11,4 +11,19 @@
         <?php echo html_escape($book->author); ?>
         #<?php echo html_escape($book->visitorStats); ?>
     </div>
+    <h3>
+        Others also viewed:
+    </h3>
+    <div>
+        <?php
+        $this->table->set_heading('Cover',
+            'Title',
+            'Price',
+            'Category Name',
+            'Author',
+            'Actions');
+
+        echo $this->table->generate($recommendedBooks);
+        ?>
+    </div>
 </div>

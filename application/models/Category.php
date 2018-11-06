@@ -1,6 +1,6 @@
 <?php
 
-class Category extends My_Model {
+class Category extends CI_Model {
 
     const DB_TABLE_NAME = 'category';
     const DB_TABLE_PK_VALUE = 'id';

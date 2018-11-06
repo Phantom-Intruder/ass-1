@@ -3,6 +3,7 @@
 <?php
 $this->table->set_heading('Cover',
                           'Title',
+                          'Price',
                           'Visitor Statistics',
                           'Category Id',
                           'Author',

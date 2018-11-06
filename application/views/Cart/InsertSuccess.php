@@ -1,0 +1,1 @@
+<h2>Added to shopping cart!</h2>

@@ -3,13 +3,14 @@
 <?php
 $this->table->set_heading('Cover',
     'Title',
-    'Visitor Statistics',
-    'Category Id',
+    'Price',
+    'Category',
     'Author',
     'Actions');
 
 echo $this->table->generate($books);
 
+
 for ($x = 1; $x <= $page+1; $x++) {
-    echo anchor('Home/listByCategory/' . $categoryId . '/' . $x * 2 . '/' . ($x * 2) - 2 , '<p>$x</p>');
+    echo "<a href='Home/listByCategory/" . $categoryId . "/" . $x * 2 . "/" . ($x * 2) - 2 . "'> . ".$x." </a>";
 }

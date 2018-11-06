@@ -29,7 +29,7 @@ class Admin extends CI_Controller {
 
             echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
         **/
-        $this->load->view('Navigation/header');
+        $this->load->view('Navigation/AdminNavigation/header');
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->get();
@@ -41,6 +41,7 @@ class Admin extends CI_Controller {
             $books_list[] = array(
                 img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
                 anchor('Admin/showBook/' . $book->id, $book->title),
+                $book->price,
                 $book->visitorStats,
                 $category->name,
                 $book->author,
@@ -51,7 +52,7 @@ class Admin extends CI_Controller {
         $this->load->view('Admin/index', array(
              'books' => $books_list
         ));
-        $this->load->view('Navigation/footer');
+        $this->load->view('Navigation/AdminNavigation/footer');
     }
 
     /**
@@ -68,7 +69,7 @@ class Admin extends CI_Controller {
 
         $this->load->library('upload', $config);
 
-        $this->load->view('Navigation/header');
+        $this->load->view('Navigation/AdminNavigation/header');
         $this->load->helper('form');
         $this->load->model('Category');
         $categories = $this->Category->get();
@@ -82,6 +83,11 @@ class Admin extends CI_Controller {
             array(
                 'field' => 'title',
                 'label' => 'Title',
+                'rules' => 'required',
+            ),
+            array(
+                'field' => 'price',
+                'label' => 'Price',
                 'rules' => 'required',
             ),
             array(
@@ -110,6 +116,7 @@ class Admin extends CI_Controller {
             $book = new Book();
             $book->categoryId = $this->input->post('categoryId');
             $book->title = $this->input->post('title');
+            $book->price = $this->input->post('price');
             $book->cover = $this->input->post('cover');
             $book->author = $this->input->post('author');
             $book->visitorStats = 0;
@@ -123,7 +130,7 @@ class Admin extends CI_Controller {
                 'book' => $book,
             ));
         }
-        $this->load->view('Navigation/footer');
+        $this->load->view('Navigation/AdminNavigation/footer');
     }
 
     /**
@@ -131,7 +138,7 @@ class Admin extends CI_Controller {
      */
     public function addCategory()
     {
-        $this->load->view('Navigation/header');
+        $this->load->view('Navigation/AdminNavigation/header');
         $this->load->helper('form');
 
         $this->load->library('form_validation');
@@ -151,7 +158,7 @@ class Admin extends CI_Controller {
             'book' => $category,
             ));
         }
-        $this->load->view('Navigation/footer');
+        $this->load->view('Navigation/AdminNavigation/footer');
     }
 
     /**
@@ -183,7 +190,7 @@ class Admin extends CI_Controller {
         $this->output->enable_profiler(TRUE);
 
         $this->load->helper('html');
-        $this->load->view('Navigation/header');
+        $this->load->view('Navigation/AdminNavigation/header');
         $this->load->model('Book');
         $book = new Book();
         $book->load($id);
@@ -197,7 +204,7 @@ class Admin extends CI_Controller {
             'book' => $book,
             'category' => $category
         ));
-        $this->load->view('Navigation/Footer');
+        $this->load->view('Navigation/AdminNavigation/footer');
     }
 
     /**
@@ -205,7 +212,7 @@ class Admin extends CI_Controller {
      * @param string searchTerm
      */
     public function searchBook($searchTerm){
-        $this->load->view('Navigation/header');
+        $this->load->view('Navigation/AdminNavigation/header');
         $this->load->helper('form');
         if (empty($searchTerm)){
             //TODO: No parameters, just show empty box
@@ -223,7 +230,7 @@ class Admin extends CI_Controller {
                 'book' => $category,
             ));
         }
-        $this->load->view('Navigation/footer');
+        $this->load->view('Navigation/AdminNavigation/footer');
     }
 
 }

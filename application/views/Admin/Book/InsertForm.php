@@ -6,6 +6,10 @@
         <?php echo form_input('title', set_value('title')); ?>
     </div>
     <div>
+        <?php echo form_label('Book Price', 'price'); ?>
+        <?php echo form_input('price', set_value('price')); ?>
+    </div>
+    <div>
         <?php echo form_label('Book Category', 'categoryId'); ?>
         <?php echo form_dropdown('categoryId', $category_options, set_value('categoryId'), 'class="browser-default"'); ?>
     </div>

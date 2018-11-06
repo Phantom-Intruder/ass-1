@@ -4,7 +4,10 @@ class Book extends CI_Model {
 
     const DB_TABLE_NAME = 'book';
     const DB_TABLE_PK_VALUE = 'id';
+    const DB_TABLE_USERID_VALUE = 'userId';
+    const DB_TABLE_BOOKID_VALUE = 'bookId';
     const DB_TABLE_CATEGORY_ID_VALUE = 'categoryId';
+    const DB_TABLE_NAME_USERBOOK = 'user_book';
 
     /**
      * Book number unique id
@@ -17,6 +20,12 @@ class Book extends CI_Model {
      * @var string
      */
     public $title;
+
+    /**
+     * Price of book
+     * @var int
+     */
+    public $price;
 
     /**
      * Path to cover of the book
@@ -132,6 +141,42 @@ class Book extends CI_Model {
             $model->populate($row);
             $ret_value[$row->{$this::DB_TABLE_PK_VALUE}] = $model;
         }
+        return $ret_value;
+    }
+
+    /**
+     * Get related books to book being currently viewed
+     * @param int bookId
+     * @return array of book models from db, key is PK.
+     */
+    public function getByBookId($bookId){
+        $userID = $this->session->userUniqueId;
+
+        $query = $this->db->query("SELECT * FROM book
+                                    WHERE id IN (
+                                    
+                                        SELECT bookId FROM user_book
+                                        WHERE userId IN(
+                                           
+                                            SELECT userId
+                                            FROM user_book
+                                            WHERE bookId = ".$bookId."
+                                            AND userid != '".$userID."'
+                                        
+                                        )
+                                        
+                                        AND bookid != ".$bookId."
+                                    )");
+
+        $ret_value = array();
+        $class = get_class($this);
+        foreach ($query->result() as $row){
+            $model = new $class;
+            $model->populate($row);
+            $ret_value[$row->{$this::DB_TABLE_PK_VALUE}] = $model;
+        }
+        print_r($ret_value);
+
         return $ret_value;
     }
 }
