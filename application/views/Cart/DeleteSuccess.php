@@ -1,0 +1,1 @@
+<h2>Deleted book from cart</h2>

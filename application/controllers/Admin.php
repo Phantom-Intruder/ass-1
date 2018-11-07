@@ -4,19 +4,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Admin extends CI_Controller {
 
     /**
+     * Admin constructor.
+     * Checks if user is admin
+     */
+    function __construct() {
+        parent::__construct();
+        //Set a unique ID for the user
+        if (!isset($this->session->userIsAdmin)){
+            $this->load->helper('form');
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules(array(
+                array(
+                    'field' => 'userName',
+                    'label' => 'Username',
+                    'rules' => 'required|callback_checkAdminUserName',
+                ),
+                array(
+                    'field' => 'password',
+                    'label' => 'Password',
+                    'rules' => 'required|callback_checkAdminPassword',
+                )
+            ));
+            $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+            if (!$this->form_validation->run()){
+                echo $this->load->view('Admin/Login/index', '', TRUE);
+                die();
+            }else{
+                //set session
+                $this->session->userIsAdmin = TRUE;
+            }
+        }
+    }
+
+    /**
      * Index Page for Admin controller.
-     *
-     * Maps to the following URL
-     * 		http://example.com/index.php/book
-     *	- or -
-     * 		http://example.com/index.php/book/index
-     *	- or -
-     * Since this controller is set as the default controller in
-     * config/routes.php, it's displayed at http://example.com/
-     *
-     * So any other public methods not prefixed with an underscore will
-     * map to /index.php/welcome/<method_name>
-     * @see https://codeigniter.com/user_guide/general/urls.html
      */
     public function index()
     {
@@ -53,6 +74,13 @@ class Admin extends CI_Controller {
              'books' => $books_list
         ));
         $this->load->view('Navigation/AdminNavigation/footer');
+    }
+
+    /**
+     * Login form for admin
+     */
+    public function login(){
+
     }
 
     /**
@@ -209,28 +237,78 @@ class Admin extends CI_Controller {
 
     /**
      * Search by author or book title
-     * @param string searchTerm
      */
-    public function searchBook($searchTerm){
+    public function searchBook(){
         $this->load->view('Navigation/AdminNavigation/header');
         $this->load->helper('form');
-        if (empty($searchTerm)){
-            //TODO: No parameters, just show empty box
-            $this->load->view('Admin/Search/index', array(
-                'search' => $searchTerm,
-            ));
-        }else{
-            //Has parameters, perform search
-            $this->load->model('Book');
-            $search = new Search();
-            $search->searchTerm = $this->input->post('searchTerm');
-            $category->save();
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('search', 'Search', 'required'); // | callback_checkIfExistingCategory
 
-            $this->load->view('Admin/Category/InsertSuccess', array(
-                'book' => $category,
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+        if (!$this->form_validation->run()){
+            $this->load->view('Admin/Search/index');
+        }
+        else{
+            $this->output->enable_profiler(TRUE);
+
+            $searchTerm = $this->input->post('search');
+            $this->load->library('table');
+            $this->load->model('Book');
+            $books = $this->Book->GetBySearchTerm($searchTerm);
+            $books_list = array();
+
+            foreach ($books as $book){
+                $this->load->model('Category');
+                $category = new Category();
+                $category->load($book->categoryId);
+                $books_list[] = array(
+                    img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
+                    anchor('Home/showBook/' . $book->id, $book->title),
+                    $book->price,
+                    $category->name,
+                    $book->author,
+                    anchor('Home/addToCart/' . $book->id, 'Add to shopping cart'),
+                );
+            }
+
+            $this->load->view('Book/List', array(
+                'books' => $books_list,
             ));
         }
         $this->load->view('Navigation/AdminNavigation/footer');
     }
 
+    /**
+     * receive admin username
+     * Check to see if correct
+     * return true
+     * else false
+     * @param string $userName
+     * @return boolean
+     */
+    public function checkAdminUserName($userName){
+        if ($userName == 'admin'){
+            return TRUE;
+        }else{
+            $this->form_validation->set_message('checkAdminUserName', 'error');
+            return FALSE;
+        }
+    }
+
+    /**
+     * receive admin password
+     * Check to see if correct
+     * return true
+     * else false
+     * @param string $password
+     * @return boolean
+     */
+    public function checkAdminPassword($password){
+        if ($password == 'admin123'){
+            return TRUE;
+        }else{
+            $this->form_validation->set_message('checkAdminPassword', 'error2');
+            return FALSE;
+        }
+    }
 }

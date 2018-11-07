@@ -179,4 +179,32 @@ class Book extends CI_Model {
 
         return $ret_value;
     }
+
+    /**
+     * Search by title or author
+     * @param $searchTerm string
+     * @return array of book models from db, key is PK.
+     */
+    public function GetBySearchTerm($searchTerm){
+        $arrayLike = explode(' ', $searchTerm);
+        foreach($arrayLike as $key => $value) {
+            if($key == 0) {
+                $this->db->like('title', $value);
+            } else {
+                $this->db->or_like('title', $value);
+            }
+        }
+        foreach($arrayLike as $key => $value) {
+            $this->db->or_like('author', $value);
+        }
+        $query = $this->db->get($this::DB_TABLE_NAME);
+        $ret_value = array();
+        $class = get_class($this);
+        foreach ($query->result() as $row){
+            $model = new $class;
+            $model->populate($row);
+            $ret_value[$row->{$this::DB_TABLE_PK_VALUE}] = $model;
+        }
+        return $ret_value;
+    }
 }

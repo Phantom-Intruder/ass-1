@@ -4,27 +4,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Home extends CI_Controller {
 
     /**
-     * Index Page for Book controller.
-     *
-     * Maps to the following URL
-     * 		http://example.com/index.php/book
-     *	- or -
-     * 		http://example.com/index.php/book/index
-     *	- or -
-     * Since this controller is set as the default controller in
-     * config/routes.php, it's displayed at http://example.com/
-     *
-     * So any other public methods not prefixed with an underscore will
-     * map to /index.php/welcome/<method_name>
-     * @see https://codeigniter.com/user_guide/general/urls.html
+     * Home constructor.
+     * Checks if user has a unique ID set
      */
-    public function index()
-    {
+    function __construct() {
+        parent::__construct();
         //Set a unique ID for the user
         if (!isset($this->session->userUniqueId)){
             $this->session->userUniqueId = uniqid();
         }
+    }
 
+    /**
+     * Index Page for Book controller.
+     */
+    public function index()
+    {
         $this->load->view('Navigation/UserNavigation/header');
         $this->load->library('table');
         $this->load->model('Book');
@@ -76,7 +71,6 @@ class Home extends CI_Controller {
      * @param int categoryId
      */
     public function listByCategory($categoryId, $limit = 20, $offset = 0){
-        $this->output->enable_profiler(TRUE);
         $this->load->view('Navigation/UserNavigation/header');
         $this->load->library('table');
         $this->load->model('Book');
@@ -229,4 +223,31 @@ class Home extends CI_Controller {
         $this->load->view('Navigation/UserNavigation/footer');
     }
 
+    /**
+     * Delete book from shopping cart
+     * @param int $bookId
+     */
+    public function deleteFromCart($bookId){
+        $alreadyAddedBooks = array();
+
+        //TODO: Set book Id to session object
+        if (isset($this->session->userCart)){
+            //TODO: create new cart for user and add to cart
+            $alreadyAddedBooks  = $this->session->userCart;
+        }
+
+        //TODO: Add to cart
+        if (in_array($bookId, $alreadyAddedBooks)){
+            $alreadyAddedBooks = array_diff($alreadyAddedBooks, array($bookId));
+        }
+        $this->session->userCart = $alreadyAddedBooks;
+
+        $this->load->view('Cart/DeleteSuccess',array(
+            'cart' => $alreadyAddedBooks
+        ));
+        /*
+
+        //$_SESSION['cartBookIds'] =
+        */
+    }
 }
