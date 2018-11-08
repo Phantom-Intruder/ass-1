@@ -152,21 +152,33 @@ class Book extends CI_Model {
     public function getByBookId($bookId){
         $userID = $this->session->userUniqueId;
 
-        $query = $this->db->query("SELECT * FROM book
-                                    WHERE id IN (
-                                    
-                                        SELECT bookId FROM user_book
-                                        WHERE userId IN(
-                                           
-                                            SELECT userId
-                                            FROM user_book
-                                            WHERE bookId = ".$bookId."
-                                            AND userid != '".$userID."'
-                                        
-                                        )
-                                        
-                                        AND bookid != ".$bookId."
-                                    )");
+        $query = $this->db->query("SELECT
+                                        book.*
+                                    FROM
+                                        (
+                                        SELECT
+                                            bookId,
+                                            COUNT(*) AS viewCount
+                                        FROM
+                                            user_book
+                                        WHERE
+                                            userId IN(
+                                            SELECT
+                                                userId
+                                            FROM
+                                                user_book
+                                            WHERE
+                                                bookId = ".$bookId." AND userid != '".$userID."'
+                                        ) AND bookId != ".$bookId."
+                                    GROUP BY
+                                        bookId
+                                    ) temp
+                                    INNER JOIN book ON book.id = temp.bookId
+                                    ORDER BY
+                                        viewCount
+                                    DESC
+                                    LIMIT 5");
+
 
         $ret_value = array();
         $class = get_class($this);
