@@ -11,6 +11,6 @@ $this->table->set_heading('Cover',
 echo $this->table->generate($books);
 
 
-for ($x = 1; $x <= $page+1; $x++) {
-    echo "<a href='Home/listByCategory/" . $categoryId . "/" . $x * 2 . "/" . ($x * 2) - 2 . "'> . ".$x." </a>";
+for ($x = 1; $x <= $page; $x++) {
+    echo "<a href= '" . base_url(). "index.php/Home/listByCategory/ . $categoryId . "/" . $x * 2 . "/" . (($x * 2) - 2) . "'> " . $x . "</a> |";
 }

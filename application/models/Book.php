@@ -153,31 +153,29 @@ class Book extends CI_Model {
         $userID = $this->session->userUniqueId;
 
         $query = $this->db->query("SELECT
-                                        book.*
-                                    FROM
-                                        (
-                                        SELECT
-                                            bookId,
-                                            COUNT(*) AS viewCount
-                                        FROM
-                                            user_book
-                                        WHERE
-                                            userId IN(
-                                            SELECT
-                                                userId
-                                            FROM
-                                                user_book
-                                            WHERE
-                                                bookId = ".$bookId." AND userid != '".$userID."'
-                                        ) AND bookId != ".$bookId."
-                                    GROUP BY
-                                        bookId
-                                    ) temp
-                                    INNER JOIN book ON book.id = temp.bookId
-                                    ORDER BY
-                                        viewCount
-                                    DESC
-                                    LIMIT 5");
+										book.*
+									FROM
+										(
+										SELECT
+											bookId,
+											COUNT(*) AS viewCount
+										FROM
+											user_book UB2
+										WHERE EXISTS (
+											SELECT 1
+											FROM
+												user_book UB
+											WHERE
+												UB.bookId = ".$bookId." AND UB.userid != '5be18b3d42734' AND UB.userId = UB2.userId
+										) AND UB2.bookid != ".$bookId."
+									GROUP BY
+										bookId
+									) temp
+									INNER JOIN book ON book.id = temp.bookId
+									ORDER BY
+										viewCount
+									DESC
+									LIMIT 5");
 
 
         $ret_value = array();

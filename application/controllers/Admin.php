@@ -183,7 +183,7 @@ class Admin extends CI_Controller {
             $category->save();
 
             $this->load->view('Admin/Category/InsertSuccess', array(
-            'book' => $category,
+                'book' => $category,
             ));
         }
         $this->load->view('Navigation/AdminNavigation/footer');

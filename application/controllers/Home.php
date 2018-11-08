@@ -69,14 +69,18 @@ class Home extends CI_Controller {
     /**
      * View books in a particular category
      * @param int categoryId
+     * @param int $limit
+     * @param int $offset
      */
     public function listByCategory($categoryId, $limit = 20, $offset = 0){
-        $this->load->view('Navigation/UserNavigation/header');
+        $this->output->enable_profiler(TRUE);
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->getByCategoryId($categoryId, $limit, $offset);
         $books_list = array();
-        $pages = sizeof($books)/2;
+        $pages = ceil(sizeof($books)/2);
+        print_r($limit, $offset);
+        $this->load->view('Navigation/UserNavigation/header');
         foreach ($books as $book){
             $this->load->model('Category');
             $category = new Category();
@@ -90,7 +94,6 @@ class Home extends CI_Controller {
                 anchor('Home/addToCart/' . $book->id, 'Add to shopping cart'),
             );
         }
-
         $this->load->view('Book/List', array(
             'books' => $books_list,
             'page' => $pages,
@@ -104,7 +107,6 @@ class Home extends CI_Controller {
      * @param int $id
      */
     public function showBook($id){
-        $this->output->enable_profiler(TRUE);
 
         //Record details of book visit
 
