@@ -1,1 +1,1 @@
-<h2>Category was inserted successfully</h2>
+<h2>Category <?php $category->name ?> was inserted successfully</h2>

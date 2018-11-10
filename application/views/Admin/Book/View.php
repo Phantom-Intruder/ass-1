@@ -4,7 +4,7 @@
         <?php echo html_escape($book->price); ?>
         <?php if ($book->cover){ ?>
             <div class="cover">
-                <?php echo img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')); ?>
+                <?php echo img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'150px')); ?>
             </div>
         <?php }?>
         <?php echo html_escape($category->name); ?>

@@ -22,35 +22,6 @@ class Home extends CI_Controller {
     {
         $this->load->view('Navigation/UserNavigation/header');
         $this->load->library('table');
-        $this->load->model('Book');
-        $books = $this->Book->get();
-        $books_list = array();
-        foreach ($books as $book){
-            $this->load->model('Category');
-            $category = new Category();
-            $category->load($book->categoryId);
-            $books_list[] = array(
-                img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
-                anchor('Admin/showBook/' . $book->id, $book->title),
-                $book->price,
-                $category->name,
-                $book->author,
-            );
-        }
-
-        $this->load->view('Book/List', array(
-            'books' => $books_list
-        ));
-        $this->load->view('Navigation/UserNavigation/footer');
-    }
-
-    /**
-     * View list of categories
-     */
-    public function listCategories()
-    {
-        $this->load->view('Navigation/UserNavigation/header');
-        $this->load->library('table');
         $this->load->model('Category');
         $categories = $this->Category->get();
         $categories_list = array();
@@ -66,20 +37,23 @@ class Home extends CI_Controller {
         $this->load->view('Navigation/UserNavigation/footer');
     }
 
+
     /**
      * View books in a particular category
      * @param int categoryId
      * @param int $limit
      * @param int $offset
      */
-    public function listByCategory($categoryId, $limit = 20, $offset = 0){
+    public function listByCategory($categoryId, $limit = 5, $offset = 0){
+        $this->config->set_item('numberOfPages', $limit);
         $this->output->enable_profiler(TRUE);
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->getByCategoryId($categoryId, $limit, $offset);
         $books_list = array();
-        $pages = ceil(sizeof($books)/2);
-        print_r($limit, $offset);
+        $bookCount = $this->Book->getNumberOfBooksInCategory($categoryId);
+        $pages = ceil($bookCount/$this->config->item('numberOfPages'));
+        print_r($pages);
         $this->load->view('Navigation/UserNavigation/header');
         foreach ($books as $book){
             $this->load->model('Category');
@@ -164,21 +138,13 @@ class Home extends CI_Controller {
     public function addToCart($bookId){
         $alreadyAddedBooks = array();
 
-        //TODO: Set book Id to session object
+        //Set book Id to session object
         if (isset($this->session->userCart)){
-            //TODO: create new cart for user and add to cart
+            //create new cart for user and add to cart
             $alreadyAddedBooks  = $this->session->userCart;
-            /*
-            $this->session->userCart = array(
-                'userID' => $this->session->userUniqueId,
-                'booksSelected' => array(
-                    '123'
-                )
-            );
-            */
         }
 
-        //TODO: Add to cart
+        //Add to cart
         if (!in_array($bookId, $alreadyAddedBooks)){
             array_push($alreadyAddedBooks, $bookId);
         }
@@ -187,10 +153,7 @@ class Home extends CI_Controller {
         $this->load->view('Cart/InsertSuccess',array(
             'cart' => $alreadyAddedBooks
         ));
-        /*
-
-        //$_SESSION['cartBookIds'] =
-        */
+        redirect('/Home/showCart', 'refresh');
     }
 
     /**

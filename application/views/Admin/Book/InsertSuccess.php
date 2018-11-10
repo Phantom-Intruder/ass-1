@@ -1,1 +1,1 @@
-<h2>Book was inserted successfully</h2>
+<h2>Book <?php $book->title ?> was inserted successfully</h2>

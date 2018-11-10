@@ -22,6 +22,6 @@
         <?php echo form_input('author', set_value('author')); ?>
     </div>
     <div>
-        <?php echo form_submit('save', 'Save'); ?>
+        <?php echo form_submit('save', 'Save', 'class="waves-effect waves-light btn"'); ?>
     </div>
 <?php echo form_close(); ?>

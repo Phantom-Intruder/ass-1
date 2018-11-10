@@ -25,7 +25,7 @@ class Admin extends CI_Controller {
                     'rules' => 'required|callback_checkAdminPassword',
                 )
             ));
-            $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+            $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
             if (!$this->form_validation->run()){
                 echo $this->load->view('Admin/Login/index', '', TRUE);
                 die();
@@ -50,7 +50,7 @@ class Admin extends CI_Controller {
 
             echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
         **/
-        $this->load->view('Navigation/AdminNavigation/header');
+        $this->load->view('Navigation/AdminNavigation/Header');
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->get();
@@ -59,11 +59,15 @@ class Admin extends CI_Controller {
             $this->load->model('Category');
             $category = new Category();
             $category->load($book->categoryId);
+
+            $this->load->model('UserBook');
+            $userBook = new UserBook();
+            $viewArray = $userBook->getByBookId($book->id);
             $books_list[] = array(
-                img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
+                img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'150px')),
                 anchor('Admin/showBook/' . $book->id, $book->title),
                 $book->price,
-                $book->visitorStats,
+                sizeof($viewArray),
                 $category->name,
                 $book->author,
                 anchor('Admin/deleteBook/' . $book->id, 'Delete'),
@@ -74,13 +78,6 @@ class Admin extends CI_Controller {
              'books' => $books_list
         ));
         $this->load->view('Navigation/AdminNavigation/footer');
-    }
-
-    /**
-     * Login form for admin
-     */
-    public function login(){
-
     }
 
     /**
@@ -129,7 +126,7 @@ class Admin extends CI_Controller {
                 'rules' => 'required',
             )
         ));
-        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+        $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
         $check_file_upload = FALSE;
         if (isset($_FILES['cover']['error']) && ($_FILES['cover']['error'] != 4)) {
             $check_file_upload = TRUE;
@@ -162,6 +159,25 @@ class Admin extends CI_Controller {
     }
 
     /**
+     * Delete Book
+     * @param int $bookId
+     */
+    public function deleteBook($bookId){
+        $this->load->view('Navigation/AdminNavigation/header');
+        $this->load->model('Book');
+        $book = new Book();
+        $book->load($bookId);
+        if (!$book->id){
+            show_404();
+        }
+        $book->delete($bookId);
+        $this->load->view('Admin/Book/DeleteSuccess', array(
+            'book' => $book,
+        ));
+        $this->load->view('Navigation/AdminNavigation/footer');
+    }
+
+    /**
      * Loads view for adding a category
      */
     public function addCategory()
@@ -172,7 +188,7 @@ class Admin extends CI_Controller {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('name', 'Category Name', 'required'); // | callback_checkIfExistingCategory
 
-        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+        $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
         if (!$this->form_validation->run()){
             $this->load->view('Admin/Category/InsertForm');
         }
@@ -183,7 +199,7 @@ class Admin extends CI_Controller {
             $category->save();
 
             $this->load->view('Admin/Category/InsertSuccess', array(
-                'book' => $category,
+                'category' => $category,
             ));
         }
         $this->load->view('Navigation/AdminNavigation/footer');
@@ -242,9 +258,9 @@ class Admin extends CI_Controller {
         $this->load->view('Navigation/AdminNavigation/header');
         $this->load->helper('form');
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('search', 'Search', 'required'); // | callback_checkIfExistingCategory
+        $this->form_validation->set_rules('search', 'Search', 'required');
 
-        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+        $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
         if (!$this->form_validation->run()){
             $this->load->view('Admin/Search/index');
         }
@@ -263,15 +279,16 @@ class Admin extends CI_Controller {
                 $category->load($book->categoryId);
                 $books_list[] = array(
                     img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
-                    anchor('Home/showBook/' . $book->id, $book->title),
+                    anchor('Admin/showBook/' . $book->id, $book->title),
                     $book->price,
+                    $book->visitorStats,
                     $category->name,
                     $book->author,
                     anchor('Home/addToCart/' . $book->id, 'Add to shopping cart'),
                 );
             }
 
-            $this->load->view('Book/List', array(
+            $this->load->view('Admin/index', array(
                 'books' => $books_list,
             ));
         }

@@ -72,6 +72,14 @@ class Book extends CI_Model {
     }
 
     /**
+     * Delete book
+     * @param int $id
+     */
+    public function delete($id){
+        $this->db->delete($this::DB_TABLE_NAME, array($this::DB_TABLE_PK_VALUE => $id));
+    }
+
+    /**
      * Update book details
      */
     private function update(){
@@ -145,6 +153,25 @@ class Book extends CI_Model {
     }
 
     /**
+     * Get number of all books by category ID
+     * @param int categoryID
+     * @return int of number of books from db, key is PK.
+     */
+    public function getNumberOfBooksInCategory($categoryId){
+        $query = $this->db->get_where($this::DB_TABLE_NAME, array(
+            $this::DB_TABLE_CATEGORY_ID_VALUE => $categoryId,
+        ));
+        $ret_value = array();
+        $class = get_class($this);
+        foreach ($query->result() as $row){
+            $model = new $class;
+            $model->populate($row);
+            $ret_value[$row->{$this::DB_TABLE_PK_VALUE}] = $model;
+        }
+        return sizeof($ret_value);
+    }
+
+    /**
      * Get related books to book being currently viewed
      * @param int bookId
      * @return array of book models from db, key is PK.
@@ -166,7 +193,7 @@ class Book extends CI_Model {
 											FROM
 												user_book UB
 											WHERE
-												UB.bookId = ".$bookId." AND UB.userid != '5be18b3d42734' AND UB.userId = UB2.userId
+												UB.bookId = ".$bookId." AND UB.userid != '".$userID."' AND UB.userId = UB2.userId
 										) AND UB2.bookid != ".$bookId."
 									GROUP BY
 										bookId
