@@ -15,11 +15,7 @@
                             // Quick and dirty navigation.
                             $menu_item_default = 'index';
                               $menu_items = array(
-                                  'index' => array(
-                                      'label' => 'Home',
-                                      'desc' => 'A list of all categories',
-                                  ),
-                                  'showCart' => array(
+                                  'Cart/Show' => array(
                                       'label' => 'Show Cart',
                                       'desc' => 'Show contents of cart',
                                   ),

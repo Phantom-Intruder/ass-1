@@ -212,7 +212,6 @@ class Book extends CI_Model {
             $model->populate($row);
             $ret_value[$row->{$this::DB_TABLE_PK_VALUE}] = $model;
         }
-        print_r($ret_value);
 
         return $ret_value;
     }

@@ -24,15 +24,15 @@ class Home extends CI_Controller {
         $this->load->library('table');
         $this->load->model('Category');
         $categories = $this->Category->get();
-        $categories_list = array();
+        $categoriesList = array();
 
         foreach ($categories as $category) {
-            $categories_list[] = array(
-                anchor('Home/listByCategory/' . $category->id, $category->name),
+            $categoriesList[] = array(
+                anchor('Home/Category/List/' . $category->id, $category->name),
             );
         }
         $this->load->view('Category/List', array(
-            'categories' => $categories_list
+            'categories' => $categoriesList
         ));
         $this->load->view('Navigation/UserNavigation/footer');
     }
@@ -44,32 +44,30 @@ class Home extends CI_Controller {
      * @param int $limit
      * @param int $offset
      */
-    public function listByCategory($categoryId, $limit = 5, $offset = 0){
+    public function listByCategory($categoryId, $limit = 3, $offset = 0){
         $this->config->set_item('numberOfPages', $limit);
-        $this->output->enable_profiler(TRUE);
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->getByCategoryId($categoryId, $limit, $offset);
-        $books_list = array();
+        $booksList = array();
         $bookCount = $this->Book->getNumberOfBooksInCategory($categoryId);
         $pages = ceil($bookCount/$this->config->item('numberOfPages'));
-        print_r($pages);
         $this->load->view('Navigation/UserNavigation/header');
         foreach ($books as $book){
             $this->load->model('Category');
             $category = new Category();
             $category->load($book->categoryId);
-            $books_list[] = array(
+            $booksList[] = array(
                 img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
-                anchor('Home/showBook/' . $book->id, $book->title),
+                anchor('Home/Book/Show/' . $book->id, $book->title),
                 $book->price,
                 $category->name,
                 $book->author,
-                anchor('Home/addToCart/' . $book->id, 'Add to shopping cart'),
+                anchor('Home/Cart/Add/' . $book->id, 'Add to shopping cart'),
             );
         }
         $this->load->view('Book/List', array(
-            'books' => $books_list,
+            'books' => $booksList,
             'page' => $pages,
             'categoryId' => $categoryId
         ));
@@ -112,11 +110,11 @@ class Home extends CI_Controller {
             $category->load($book->categoryId);
             $recommendedBooksList[] = array(
                 img(array('src'=> 'assets/'.$recommendedBook->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
-                anchor('Home/showBook/' . $recommendedBook->id, $recommendedBook->title),
+                anchor('Home/Book/Show/' . $recommendedBook->id, $recommendedBook->title),
                 $book->price,
                 $category->name,
                 $book->author,
-                anchor('Home/addToCart/' . $book->id, 'Add to shopping cart'),
+                anchor('Home/Cart/Add/' . $book->id, 'Add to shopping cart'),
             );
         }
 
@@ -153,37 +151,37 @@ class Home extends CI_Controller {
         $this->load->view('Cart/InsertSuccess',array(
             'cart' => $alreadyAddedBooks
         ));
-        redirect('/Home/showCart', 'refresh');
+        redirect('/Home/Cart/Show', 'refresh');
     }
 
     /**
      * Show shopping cart
      */
     public function showCart(){
-        $this->output->enable_profiler(TRUE);
         $this->load->view('Navigation/UserNavigation/header');
         $this->load->library('table');
         $this->load->model('Book');
-        $bookIDInCart = $this->session->userCart;
-        $books_list = array();
-        foreach ($bookIDInCart as $bookID) {
-            $book = new Book();
-            $book->load($bookID);
-            $this->load->model('Category');
-            $category = new Category();
-            $category->load($book->categoryId);
-            $books_list[] = array(
-                img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
-                anchor('Home/showBook/' . $book->id, $book->title),
-                $book->price,
-                $category->name,
-                $book->author,
-                anchor('Home/deleteFromCart/' . $book->id, "Delete from shopping cart"),
-            );
+        $booksList = array();
+        if(isset($this->session->userCart)) {
+            $bookIDInCart = $this->session->userCart;
+            foreach ($bookIDInCart as $bookID) {
+                $book = new Book();
+                $book->load($bookID);
+                $this->load->model('Category');
+                $category = new Category();
+                $category->load($book->categoryId);
+                $booksList[] = array(
+                    img(array('src' => 'assets/' . $book->cover, 'alt' => 'Image not found', 'width' => '100px', 'height' => '100px')),
+                    anchor('Home/Book/Show/' . $book->id, $book->title),
+                    $book->price,
+                    $category->name,
+                    $book->author,
+                    anchor('Home/Cart/Delete/' . $book->id, "Delete from shopping cart"),
+                );
+            }
         }
-
         $this->load->view('Cart/View', array(
-            'books' => $books_list
+            'books' => $booksList
         ));
         $this->load->view('Navigation/UserNavigation/footer');
     }
@@ -193,15 +191,17 @@ class Home extends CI_Controller {
      * @param int $bookId
      */
     public function deleteFromCart($bookId){
+        $this->load->view('Navigation/UserNavigation/header');
+
         $alreadyAddedBooks = array();
 
-        //TODO: Set book Id to session object
+        //Set book Id to session object
         if (isset($this->session->userCart)){
             //TODO: create new cart for user and add to cart
             $alreadyAddedBooks  = $this->session->userCart;
         }
 
-        //TODO: Add to cart
+        //Add to cart
         if (in_array($bookId, $alreadyAddedBooks)){
             $alreadyAddedBooks = array_diff($alreadyAddedBooks, array($bookId));
         }
@@ -210,9 +210,7 @@ class Home extends CI_Controller {
         $this->load->view('Cart/DeleteSuccess',array(
             'cart' => $alreadyAddedBooks
         ));
-        /*
+        $this->load->view('Navigation/UserNavigation/footer');
 
-        //$_SESSION['cartBookIds'] =
-        */
     }
 }

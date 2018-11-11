@@ -6,7 +6,7 @@ $menu_items = array(
     'label' => 'Home',
     'desc' => 'A list of all categories',
   ),
-  'showCart' => array(
+  'Cart/Show' => array(
     'label' => 'Show Cart',
     'desc' => 'Show contents of cart',
   ),
@@ -55,7 +55,7 @@ if (@array_key_exists($this->uri->segment(2), $menu_items)) {
                         <ul class="nav">
                           <?php
                             foreach ($menu_items as $item => $item_data) {
-                              echo '<li' . ($item == $menu_current ? ' class="active"' : '') . '>';
+                              echo '<li>';
                                 echo '<a href="' . base_url(). 'index.php/Home/' . $item . '" title="' . $item_data['desc'] . '">' . $item_data['label'] . '</a>';
                               echo '</li>';
                             }

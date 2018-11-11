@@ -15,15 +15,15 @@
                             // Quick and dirty navigation.
                             $menu_item_default = 'index';
                           $menu_items = array(
-                              'addBook' => array(
+                              'Book/Add' => array(
                                   'label' => 'Add Book',
                                   'desc' => 'Add Book',
                               ),
-                              'addCategory' => array(
+                              'Category/Add' => array(
                                   'label' => 'Add Category',
                                   'desc' => 'Add Category',
                               ),
-                              'searchBook' => array(
+                              'Book/Search' => array(
                                   'label' => 'Search Book',
                                   'desc' => 'Search book',
                               ),

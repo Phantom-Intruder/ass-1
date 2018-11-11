@@ -6,15 +6,15 @@ $menu_items = array(
     'label' => 'Home',
     'desc' => 'A list of all categories',
   ),
-  'addBook' => array(
+  'Book/Add' => array(
     'label' => 'Add Book',
     'desc' => 'Add Book',
   ),
-  'addCategory' => array(
+  'Category/Add' => array(
     'label' => 'Add Category',
     'desc' => 'Add Category',
   ),
-  'searchBook' => array(
+  'Book/Search/' => array(
     'label' => 'Search Book',
     'desc' => 'Search book',
   ),
@@ -58,12 +58,12 @@ if (@array_key_exists($this->uri->segment(2), $menu_items)) {
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-                    <a class="brand" href="#">Book Store</a>
+                    <a class="brand">Book Store</a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                           <?php
                             foreach ($menu_items as $item => $item_data) {
-                              echo '<li' . ($item == $menu_current ? ' class="active"' : '') . '>';
+                              echo '<li>';
                                 echo '<a href="' . base_url(). 'index.php/Admin/' . $item . '" title="' . $item_data['desc'] . '">' . $item_data['label'] . '</a>';
                               echo '</li>';
                             }

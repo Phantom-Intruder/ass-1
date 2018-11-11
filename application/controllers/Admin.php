@@ -9,6 +9,7 @@ class Admin extends CI_Controller {
      */
     function __construct() {
         parent::__construct();
+        $this->load->view('Navigation/AdminNavigation/Header');
         //Set a unique ID for the user
         if (!isset($this->session->userIsAdmin)){
             $this->load->helper('form');
@@ -25,7 +26,7 @@ class Admin extends CI_Controller {
                     'rules' => 'required|callback_checkAdminPassword',
                 )
             ));
-            $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
+            $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
             if (!$this->form_validation->run()){
                 echo $this->load->view('Admin/Login/index', '', TRUE);
                 die();
@@ -41,20 +42,11 @@ class Admin extends CI_Controller {
      */
     public function index()
     {
-        /**
-            $this->load->model('category');
-            $book = new Category();
-            $book->name = "Self help";
-
-            $book->save();
-
-            echo '<tt><pre>' . var_export($book, TRUE) . '</pre></tt>';
-        **/
         $this->load->view('Navigation/AdminNavigation/Header');
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->get();
-        $books_list = array();
+        $booksList = array();
         foreach ($books as $book){
             $this->load->model('Category');
             $category = new Category();
@@ -63,19 +55,19 @@ class Admin extends CI_Controller {
             $this->load->model('UserBook');
             $userBook = new UserBook();
             $viewArray = $userBook->getByBookId($book->id);
-            $books_list[] = array(
+            $booksList[] = array(
                 img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'150px')),
-                anchor('Admin/showBook/' . $book->id, $book->title),
+                anchor('Admin/Book/Show/' . $book->id, $book->title),
                 $book->price,
                 sizeof($viewArray),
                 $category->name,
                 $book->author,
-                anchor('Admin/deleteBook/' . $book->id, 'Delete'),
+                anchor('Admin/Book/Delete/' . $book->id, 'Delete'),
             );
         }
 
         $this->load->view('Admin/index', array(
-             'books' => $books_list
+             'books' => $booksList
         ));
         $this->load->view('Navigation/AdminNavigation/footer');
     }
@@ -98,9 +90,9 @@ class Admin extends CI_Controller {
         $this->load->helper('form');
         $this->load->model('Category');
         $categories = $this->Category->get();
-        $category_options = array();
+        $categoryOptions = array();
         foreach ($categories as $id => $category){
-            $category_options[$id] = $category->name;
+            $categoryOptions[$id] = $category->name;
         }
 
         $this->load->library('form_validation');
@@ -126,14 +118,14 @@ class Admin extends CI_Controller {
                 'rules' => 'required',
             )
         ));
-        $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
-        $check_file_upload = FALSE;
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+        $isFileValid = FALSE;
         if (isset($_FILES['cover']['error']) && ($_FILES['cover']['error'] != 4)) {
-            $check_file_upload = TRUE;
+            $isFileValid = TRUE;
         }
-        if (!$this->form_validation->run() || ($check_file_upload && !$this->upload->do_upload('cover'))){
+        if (!$this->form_validation->run() || ($isFileValid && !$this->upload->do_upload('cover'))){
             $this->load->view('Admin/Book/InsertForm', array(
-                'category_options' => $category_options,
+                'category_options' => $categoryOptions,
             ));
         }
         else{
@@ -145,10 +137,9 @@ class Admin extends CI_Controller {
             $book->cover = $this->input->post('cover');
             $book->author = $this->input->post('author');
             $book->visitorStats = 0;
-            $upload_data = $this->upload->data();
-            if (isset($upload_data['file_name'])) {
-                print_r('', $upload_data['file_name']);
-                $book->cover = $upload_data['file_name'];
+            $dataUpload = $this->upload->data();
+            if (isset($dataUpload['file_name'])) {
+                $book->cover = $dataUpload['file_name'];
             }
             $book->save();
             $this->load->view('Admin/Book/InsertSuccess', array(
@@ -188,7 +179,7 @@ class Admin extends CI_Controller {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('name', 'Category Name', 'required'); // | callback_checkIfExistingCategory
 
-        $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
         if (!$this->form_validation->run()){
             $this->load->view('Admin/Category/InsertForm');
         }
@@ -231,7 +222,6 @@ class Admin extends CI_Controller {
      * @param int $id
      */
     public function showBook($id){
-        $this->output->enable_profiler(TRUE);
 
         $this->load->helper('html');
         $this->load->view('Navigation/AdminNavigation/header');
@@ -260,36 +250,35 @@ class Admin extends CI_Controller {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('search', 'Search', 'required');
 
-        $this->form_validation->set_error_delimiters('<div class="card red">', '</div>');
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
         if (!$this->form_validation->run()){
             $this->load->view('Admin/Search/index');
         }
         else{
-            $this->output->enable_profiler(TRUE);
 
             $searchTerm = $this->input->post('search');
             $this->load->library('table');
             $this->load->model('Book');
             $books = $this->Book->GetBySearchTerm($searchTerm);
-            $books_list = array();
+            $booksList = array();
 
             foreach ($books as $book){
                 $this->load->model('Category');
                 $category = new Category();
                 $category->load($book->categoryId);
-                $books_list[] = array(
+                $booksList[] = array(
                     img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
-                    anchor('Admin/showBook/' . $book->id, $book->title),
+                    anchor('Admin/Book/Show/' . $book->id, $book->title),
                     $book->price,
                     $book->visitorStats,
                     $category->name,
                     $book->author,
-                    anchor('Home/addToCart/' . $book->id, 'Add to shopping cart'),
+                    anchor('Admin/Book/Delete/' . $book->id, 'Delete'),
                 );
             }
 
             $this->load->view('Admin/index', array(
-                'books' => $books_list,
+                'books' => $booksList,
             ));
         }
         $this->load->view('Navigation/AdminNavigation/footer');

@@ -12,5 +12,5 @@ echo $this->table->generate($books);
 
 
 for ($x = 1; $x <= $page; $x++) {
-    echo "<a href= '" . base_url(). "index.php/Home/listByCategory/" . $categoryId . "/".$this->config->item('numberOfPages')."/" . (($x * $this->config->item('numberOfPages')) - $this->config->item('numberOfPages')) . "'> " . $x . "</a> |";
+    echo "<a href= '" . base_url(). "index.php/Home/Category/List/" . $categoryId . "/".$this->config->item('numberOfPages')."/" . (($x * $this->config->item('numberOfPages')) - $this->config->item('numberOfPages')) . "'> " . $x . "</a> |";
 }

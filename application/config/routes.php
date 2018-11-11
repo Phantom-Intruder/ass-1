@@ -52,3 +52,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+/**
+ * Custom routes Admin
+ */
+$route['Admin/Book/Add'] = 'Admin/addBook';
+$route['Admin/Book/Delete/(:num)'] = 'Admin/deleteBook/$1';
+$route['Admin/Category/Add'] = 'Admin/addCategory';
+$route['Admin/Book/Show/(:num)'] = 'Admin/showBook/$1';
+$route['Admin/Book/Search'] = 'Admin/searchBook';
+
+/**
+ * Custom routes Home
+ */
+$route['Home/Category/List/(:num)'] = 'Home/listByCategory/$1';
+$route['Home/Category/List/(:num)/(:num)/(:num)'] = 'Home/listByCategory/$1/$2/$3';
+$route['Home/Book/Show/(:num)'] = 'Home/showBook/$1';
+$route['Home/Cart/Add/(:num)'] = 'Home/addToCart/$1';
+$route['Home/Cart/Show'] = 'Home/showCart';
+$route['Home/Cart/Delete/(:num)'] = 'Home/deleteFromCart/$1';
