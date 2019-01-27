@@ -9,7 +9,6 @@ class Admin extends CI_Controller {
      */
     function __construct() {
         parent::__construct();
-        $this->load->view('Navigation/AdminNavigation/Header');
         //Set a unique ID for the user
         if (!isset($this->session->userIsAdmin)){
             $this->load->helper('form');
@@ -43,6 +42,7 @@ class Admin extends CI_Controller {
     public function index()
     {
         $this->load->view('Navigation/AdminNavigation/Header');
+        //$this->output->enable_profiler(TRUE);
         $this->load->library('table');
         $this->load->model('Book');
         $books = $this->Book->get();
@@ -52,14 +52,11 @@ class Admin extends CI_Controller {
             $category = new Category();
             $category->load($book->categoryId);
 
-            $this->load->model('UserBook');
-            $userBook = new UserBook();
-            $viewArray = $userBook->getByBookId($book->id);
             $booksList[] = array(
                 img(array('src'=> 'assets/'.$book->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'150px')),
                 anchor('Admin/Book/Show/' . $book->id, $book->title),
                 $book->price,
-                sizeof($viewArray),
+                $book->visitorStats,
                 $category->name,
                 $book->author,
                 anchor('Admin/Book/Delete/' . $book->id, 'Delete'),
@@ -296,7 +293,7 @@ class Admin extends CI_Controller {
         if ($userName == 'admin'){
             return TRUE;
         }else{
-            $this->form_validation->set_message('checkAdminUserName', 'error');
+            $this->form_validation->set_message('checkAdminUserName', 'Please check the admin user name');
             return FALSE;
         }
     }
@@ -313,7 +310,7 @@ class Admin extends CI_Controller {
         if ($password == 'admin123'){
             return TRUE;
         }else{
-            $this->form_validation->set_message('checkAdminPassword', 'error2');
+            $this->form_validation->set_message('checkAdminPassword', 'Please check the admin password');
             return FALSE;
         }
     }

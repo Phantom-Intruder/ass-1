@@ -81,6 +81,7 @@ class Home extends CI_Controller {
     public function showBook($id){
 
         //Record details of book visit
+        //$this->output->enable_profiler(TRUE);
 
         $this->load->model('UserBook');
         $userBook = new UserBook();
@@ -89,6 +90,8 @@ class Home extends CI_Controller {
         date_default_timezone_set('Asia/Colombo');
         $userBook->dateViewed = date("Y-m-d H:i:s");
         $userBook->save();
+
+        $this->load->model('Book');
 
         $this->load->helper('html');
         $this->load->view('Navigation/UserNavigation/header');
@@ -99,6 +102,10 @@ class Home extends CI_Controller {
         if (!$book->id){
             show_404();
         }
+
+        $book->visitorStats = $book->visitorStats + 1;
+        $book->save();
+
         $this->load->library('table');
 
         $recommendedBooks = $this->Book->getByBookId($book->id);
@@ -107,14 +114,14 @@ class Home extends CI_Controller {
         foreach ($recommendedBooks as $recommendedBook){
             $this->load->model('Category');
             $category = new Category();
-            $category->load($book->categoryId);
+            $category->load($recommendedBook->categoryId);
             $recommendedBooksList[] = array(
                 img(array('src'=> 'assets/'.$recommendedBook->cover, 'alt'=>'Image not found','width'=>'100px', 'height'=>'100px')),
                 anchor('Home/Book/Show/' . $recommendedBook->id, $recommendedBook->title),
-                $book->price,
+                $recommendedBook->price,
                 $category->name,
-                $book->author,
-                anchor('Home/Cart/Add/' . $book->id, 'Add to shopping cart'),
+                $recommendedBook->author,
+                anchor('Home/Cart/Add/' . $recommendedBook->id, 'Add to shopping cart'),
             );
         }
 

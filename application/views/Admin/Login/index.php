@@ -1,3 +1,4 @@
+<?php include APPPATH .'views\Navigation\AdminNavigation\Header.php'; ?>
 <?php echo validation_errors(); ?>
 <?php echo form_open(); ?>
     <div>
